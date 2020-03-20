@@ -36,7 +36,9 @@ Go to your Twilio Studio Flow and edit the Function URLs to reference your Twili
 ## Step 6
 Copy your Studio Flow Webhook URL into your WhatsApp Sand box Configuration
 
-## STep 7 Test it
+## Step 7
+
+Test it
 
 I can’t wait to see what you build with Twilio WhatsApp. Let me know what you’re working on at:
 Twitter - @chatterboxCoder
