@@ -1,0 +1,536 @@
+{
+  "description": "Mother's Day",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "InitialState",
+      "properties": {
+        "offset": {
+          "x": -60,
+          "y": -590
+        },
+        "flow_url": "https://webhooks.twilio.com/v1/Accounts/AC6d07f8eac13f6cc84aceae93f1e7501d/Flows/FW44e7f6ed56b441dabff9fe8a4c459794"
+      },
+      "transitions": [
+        {
+          "event": "incomingMessage",
+          "conditions": [],
+          "next": "FF82b1ade64d249348f01d6495b852febf",
+          "uuid": "7490662e-ab85-4d64-b53f-38852933063e"
+        },
+        {
+          "event": "incomingCall",
+          "conditions": [],
+          "next": null,
+          "uuid": "4fe6a651-6cd6-45f5-b7d7-6038d0e128cb"
+        },
+        {
+          "event": "incomingRequest",
+          "conditions": [],
+          "next": null,
+          "uuid": "0bafce17-3025-430f-818b-070605608c2c"
+        }
+      ],
+      "sid": "FF85eae17d6378f5e13cbfb77b3dfc1ebe"
+    },
+    {
+      "name": "photobooth",
+      "type": "Function",
+      "properties": {
+        "offset": {
+          "x": 210,
+          "y": 310
+        },
+        "url": "https://seashell-catfish-3067.twil.io/mdayOverlay",
+        "timeout": null,
+        "parameters": [
+          {
+            "key": "MediaUrl0",
+            "value": "{{flow.variables.incoming_picture}}"
+          },
+          {
+            "key": "Name",
+            "value": "{{widgets.ask_for_name.inbound.Body}}"
+          }
+        ],
+        "service_sid": null,
+        "function_sid": null,
+        "environment_sid": null
+      },
+      "transitions": [
+        {
+          "event": "success",
+          "conditions": [],
+          "next": "FF068dd49703649bb47588966bc636d972",
+          "uuid": "b7e6b7fd-28b1-4e50-a586-86c107ec0f40"
+        },
+        {
+          "event": "fail",
+          "conditions": [],
+          "next": "FFb946ed83b0b429dd24ddef43d69860a0",
+          "uuid": "886a9af3-ac10-4912-9629-8b0c7ccce027"
+        }
+      ],
+      "sid": "FFf9cb2b327d5c4aab8dc69a72ba089980"
+    },
+    {
+      "name": "ask_for_photo_confirmation",
+      "type": "MessagePrompt",
+      "properties": {
+        "offset": {
+          "x": 200,
+          "y": 540
+        },
+        "body": "Here is the photo that we will add to the photobook. \n\nIf you are okay with this photo please reply 'yes' if you want to change the photo just reply with your new photo.",
+        "from": "{{flow.channel.address}}",
+        "timeout": 3600,
+        "save_response_as": null,
+        "media_url": "{{widgets.photobooth.parsed.picture}}",
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "attributes": null
+      },
+      "transitions": [
+        {
+          "event": "incomingMessage",
+          "conditions": [],
+          "next": "FF76bac8ea385069030deccf3da27b6797",
+          "uuid": "e712744c-6849-48b1-98ea-57b07623bdd0"
+        },
+        {
+          "event": "timeout",
+          "conditions": [],
+          "next": "FF37de49eceb871faf9fd26c2c17ceaf0a",
+          "uuid": "a3e25b01-ceca-4033-9712-daf7b155220b"
+        },
+        {
+          "event": "deliveryFailure",
+          "conditions": [],
+          "next": null,
+          "uuid": "82bfafa0-ca3b-467e-b492-54a684f52016"
+        }
+      ],
+      "sid": "FF068dd49703649bb47588966bc636d972"
+    },
+    {
+      "name": "Confirm_Photo",
+      "type": "Branch",
+      "properties": {
+        "offset": {
+          "x": 60,
+          "y": 810
+        },
+        "input": "{{widgets.ask_for_photo_confirmation.inbound.Body}}"
+      },
+      "transitions": [
+        {
+          "event": "noMatch",
+          "conditions": [],
+          "next": "FFb7debdfb9421262e77bbc4ab56c7eab7",
+          "uuid": "b783568e-2222-458c-8666-209028c0c9bf"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to yes",
+              "type": "equal_to",
+              "arguments": [
+                "{{widgets.ask_for_photo_confirmation.inbound.Body}}"
+              ],
+              "value": "yes"
+            }
+          ],
+          "next": "FF7418dc873940952ee3c75b868bbb9626",
+          "uuid": "312133c5-109c-424a-849d-aab658f9fe20"
+        }
+      ],
+      "sid": "FF76bac8ea385069030deccf3da27b6797"
+    },
+    {
+      "name": "create_image",
+      "type": "SetVariables",
+      "properties": {
+        "offset": {
+          "x": -50,
+          "y": -410
+        },
+        "variables": [
+          {
+            "key": "incoming_picture",
+            "value": "{{trigger.message.MediaUrl0}}",
+            "index": "0"
+          },
+          {
+            "key": "incoming_message",
+            "value": "{{trigger.message.Body}}"
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "event": "next",
+          "conditions": [],
+          "next": "FF88ba84e0fb0fa1b95d6c2d2bd577bf5b",
+          "uuid": "ca2ca7c1-06b4-4215-bdda-05001e13cb51"
+        }
+      ],
+      "sid": "FF82b1ade64d249348f01d6495b852febf"
+    },
+    {
+      "name": "expired_session",
+      "type": "Message",
+      "properties": {
+        "offset": {
+          "x": 460,
+          "y": 810
+        },
+        "body": "If you want to send a picture later you can start again by sending me another photo Please send a photo to contribute to Aunty Mary's Photo Book. 💖",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "media_url": null,
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "attributes": null
+      },
+      "transitions": [
+        {
+          "event": "sent",
+          "conditions": [],
+          "next": null,
+          "uuid": "f300968c-04c8-47f9-9848-824573487607"
+        },
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "17059d29-088f-4e52-8b14-7832c503f4f4"
+        }
+      ],
+      "sid": "FF37de49eceb871faf9fd26c2c17ceaf0a"
+    },
+    {
+      "name": "invalid_message",
+      "type": "Message",
+      "properties": {
+        "offset": {
+          "x": 520,
+          "y": 540
+        },
+        "body": "Something went wrong. Please try again",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "media_url": null,
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "attributes": null
+      },
+      "transitions": [
+        {
+          "event": "sent",
+          "conditions": [],
+          "next": null,
+          "uuid": "5f889597-3ba6-4b52-9fbb-5c97a81012b9"
+        },
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "b306a292-dfb3-4c0e-9c9d-000b12978059"
+        }
+      ],
+      "sid": "FFb946ed83b0b429dd24ddef43d69860a0"
+    },
+    {
+      "name": "check_for_image",
+      "type": "Branch",
+      "properties": {
+        "offset": {
+          "x": -50,
+          "y": -180
+        },
+        "input": "{{flow.variables.incoming_picture}}"
+      },
+      "transitions": [
+        {
+          "event": "noMatch",
+          "conditions": [],
+          "next": "FFb7debdfb9421262e77bbc4ab56c7eab7",
+          "uuid": "5767b861-2c12-4d83-bbb6-0bf53c98ac3c"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value starts_with http",
+              "type": "starts_with",
+              "arguments": [
+                "{{flow.variables.incoming_picture}}"
+              ],
+              "value": "http"
+            }
+          ],
+          "next": "FFe75bc195ea4a88a639a24f1b2c0610d0",
+          "uuid": "7599bb83-4416-4fad-ab81-0806759dd736"
+        }
+      ],
+      "sid": "FF88ba84e0fb0fa1b95d6c2d2bd577bf5b"
+    },
+    {
+      "name": "No_Image",
+      "type": "Message",
+      "properties": {
+        "offset": {
+          "x": -110,
+          "y": 80
+        },
+        "body": "Please send a photo to contribute to Aunty Mary's Photo Book. 💖",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "media_url": null,
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "attributes": null
+      },
+      "transitions": [
+        {
+          "event": "sent",
+          "conditions": [],
+          "next": null,
+          "uuid": "a5466f93-5f10-4292-bc9a-46189615b066"
+        },
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "193a4ac2-0534-44dc-bb24-ea69f331d217"
+        }
+      ],
+      "sid": "FFb7debdfb9421262e77bbc4ab56c7eab7"
+    },
+    {
+      "name": "send_and_reply_1",
+      "type": "MessagePrompt",
+      "properties": {
+        "offset": {
+          "x": 220,
+          "y": 1040
+        },
+        "body": "Thank you so much for submitting this photo. Please reply with a message for Aunty Mary. She will receive this message in the Photo Book.",
+        "from": "{{flow.channel.address}}",
+        "timeout": 6000,
+        "save_response_as": null,
+        "media_url": null,
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "attributes": null
+      },
+      "transitions": [
+        {
+          "event": "incomingMessage",
+          "conditions": [],
+          "next": "FF5e31bedd3ecced26f12a5ba83fb17f34",
+          "uuid": "d18be064-3b25-4956-b417-acab6b67bc20"
+        },
+        {
+          "event": "timeout",
+          "conditions": [],
+          "next": null,
+          "uuid": "be4dde8a-1d1c-4c18-99a9-001f649f4af7"
+        },
+        {
+          "event": "deliveryFailure",
+          "conditions": [],
+          "next": null,
+          "uuid": "a451644a-b5c6-4f7f-8b7a-661b5276e92a"
+        }
+      ],
+      "sid": "FF7418dc873940952ee3c75b868bbb9626"
+    },
+    {
+      "name": "ask_for_name",
+      "type": "MessagePrompt",
+      "properties": {
+        "offset": {
+          "x": 200,
+          "y": 80
+        },
+        "body": "📸 Great Picture! 📸 \nThank you for sending a photo to contribute to Aunty Mary's Photo Book. 💖\n\nWhat's your name?",
+        "from": "{{flow.channel.address}}",
+        "timeout": 3600,
+        "save_response_as": null,
+        "media_url": null,
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "attributes": null
+      },
+      "transitions": [
+        {
+          "event": "incomingMessage",
+          "conditions": [],
+          "next": "FFf9cb2b327d5c4aab8dc69a72ba089980",
+          "uuid": "687434be-82a3-4e45-8175-0088c2db9aa4"
+        },
+        {
+          "event": "timeout",
+          "conditions": [],
+          "next": null,
+          "uuid": "599bddc1-87df-4401-9964-025396021977"
+        },
+        {
+          "event": "deliveryFailure",
+          "conditions": [],
+          "next": null,
+          "uuid": "ae11cb6a-a836-4509-a381-b90f08053b77"
+        }
+      ],
+      "sid": "FFe75bc195ea4a88a639a24f1b2c0610d0"
+    },
+    {
+      "name": "message",
+      "type": "Function",
+      "properties": {
+        "offset": {
+          "x": 230,
+          "y": 1310
+        },
+        "url": "https://seashell-catfish-3067.twil.io/message",
+        "timeout": null,
+        "parameters": [
+          {
+            "key": "message",
+            "value": "{{widgets.send_and_reply_1.inbound.Body}}"
+          },
+          {
+            "key": "Name",
+            "value": "{{widgets.ask_for_name.inbound.Body}}"
+          }
+        ],
+        "service_sid": null,
+        "function_sid": null,
+        "environment_sid": null
+      },
+      "transitions": [
+        {
+          "event": "success",
+          "conditions": [],
+          "next": "FFa1ff669906b3e5a076e1b145f6c3b7f5",
+          "uuid": "3eb3321c-2e63-4a1d-bc77-8489d10e7caa"
+        },
+        {
+          "event": "fail",
+          "conditions": [],
+          "next": null,
+          "uuid": "e527a23c-df67-4cb6-805e-ebd7ca46d371"
+        }
+      ],
+      "sid": "FF5e31bedd3ecced26f12a5ba83fb17f34"
+    },
+    {
+      "name": "Check_Message",
+      "type": "MessagePrompt",
+      "properties": {
+        "offset": {
+          "x": 240,
+          "y": 1520
+        },
+        "body": "Here is the message that we will add to the Photo Book. \n\nIf you are okay with this message please reply 'yes'. If you would like to change your message simply reply with your new message.",
+        "from": "{{flow.channel.address}}",
+        "timeout": 3600,
+        "save_response_as": null,
+        "media_url": "{{widgets.message.parsed.picture}}",
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "attributes": null
+      },
+      "transitions": [
+        {
+          "event": "incomingMessage",
+          "conditions": [],
+          "next": "FF9fffc157827f8c824b64d96a8b38ae84",
+          "uuid": "09fe5b89-596f-4739-9671-83142efa237d"
+        },
+        {
+          "event": "timeout",
+          "conditions": [],
+          "next": null,
+          "uuid": "338e822f-0b20-4461-9b6c-c0c944215915"
+        },
+        {
+          "event": "deliveryFailure",
+          "conditions": [],
+          "next": null,
+          "uuid": "d99f63a0-f16c-4988-891b-d500c08ac9ec"
+        }
+      ],
+      "sid": "FFa1ff669906b3e5a076e1b145f6c3b7f5"
+    },
+    {
+      "name": "send_message_1",
+      "type": "Message",
+      "properties": {
+        "offset": {
+          "x": 280,
+          "y": 2000
+        },
+        "body": "Thank you for sending a photo to contribute to Aunty Mary's Photo Book. 💖",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "media_url": null,
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "attributes": null
+      },
+      "transitions": [
+        {
+          "event": "sent",
+          "conditions": [],
+          "next": null,
+          "uuid": "fb0675d8-0c10-489b-89f8-311628701fcb"
+        },
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "cd9c6d92-f73f-476f-80d2-38f0cf23ac3d"
+        }
+      ],
+      "sid": "FF4adf056ad4e95d2264cce76f63d973ac"
+    },
+    {
+      "name": "split_1",
+      "type": "Branch",
+      "properties": {
+        "offset": {
+          "x": 110,
+          "y": 1770
+        },
+        "input": "{{widgets.Check_Message.inbound.Body}}"
+      },
+      "transitions": [
+        {
+          "event": "noMatch",
+          "conditions": [],
+          "next": "FF5e31bedd3ecced26f12a5ba83fb17f34",
+          "uuid": "e680b798-853b-4bf3-b80b-bb72c9a0fa62"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to yes",
+              "type": "equal_to",
+              "arguments": [
+                "{{widgets.Check_Message.inbound.Body}}"
+              ],
+              "value": "yes"
+            }
+          ],
+          "next": "FF4adf056ad4e95d2264cce76f63d973ac",
+          "uuid": "3dfe5a9e-e8d7-4826-8be8-324e11975ffc"
+        }
+      ],
+      "sid": "FF9fffc157827f8c824b64d96a8b38ae84"
+    }
+  ]
+}
